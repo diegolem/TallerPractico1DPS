@@ -1,0 +1,7 @@
+export default {
+    PRIMARY_COLOR: '#B42B51',
+    PRIMARY_COLOR_DARK: '#7D1935',
+    SECONDARY_COLOR: '#2C394B',
+    SECONDARY_COLOR_DARK: '#082032',
+  };
+  

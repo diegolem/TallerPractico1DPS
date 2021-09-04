@@ -6,107 +6,109 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+ import React, {useState, useEffect} from 'react';
+ import {SafeAreaView, StyleSheet, Text, StatusBar, Image } from 'react-native';
+ import colors from './src/utils/colors';
+ import Form from './src/components/Form';
+ import Result from './src/components/Result';
+ import Footer from './src/components/Footer';
+ 
+ const styles = StyleSheet.create({
+   Header: {
+     backgroundColor: colors.PRIMARY_COLOR,
+     height: 385,
+     borderBottomLeftRadius: 30,
+     borderBottomRightRadius: 30,
+     alignItems: 'center',
+   },
+   HeadApp: {
+     fontSize: 18,
+     fontWeight: 'bold',
+     color: '#FFF',
+     marginTop: 15,
+   },
+   safeArea: {
+     height: 290,
+     alignItems: 'center',
+   },
+   background: {
+     backgroundColor: colors.PRIMARY_COLOR,
+     height: 200,
+     width: '100%',
+     borderBottomLeftRadius: 30,
+     borderBottomRightRadius: 30,
+     position: 'absolute',
+     zIndex: -1,
+   },
+   titleApp: {
+     fontSize: 25,
+     fontWeight: 'bold',
+     color: '#fff',
+     marginTop: 15,
+   },
+   image: {
+     marginTop: 10,
+     width: 200,
+     height: 125,
+     alignItems: 'center',
+   }
+ });
+ 
+ const App = () => {
+   const [a, setA] = useState(0);
+   const [b, setB] = useState(0);
+   const [c, setC] = useState(0);
+   const [solution, setSolution] = useState(null);
+   const [errorMessage, setErrorMessage] = useState('');
+ 
+   const solve = () => {
+     reset();
+     if (!a) {
+       setErrorMessage('Escribe el valor de la letra A');
+     } else if (!b) {
+      setErrorMessage('Escribe el valor de la letra B');
+     } else if (!c) {
+      setErrorMessage('Escribe el valor de la letra C');
+     } else {
+       let x1 = ((-b) + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+       let x2 = ((-b) - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+       if(isNaN(x1)){
+         x1 = 'No se encontro solución';
+       }
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+       if(isNaN(x2)){
+        x2 = 'No se encontro solución';
+      }
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+       setSolution({
+         x1: x1,
+         x2: x2
+       });
+     }
+   };
+ 
+   const reset = () => {
+     setErrorMessage('');
+     setSolution(null);
+   };
+ 
+   return (
+     <>
+       <StatusBar barStyle="light-content" />
+       <SafeAreaView style={styles.Header}>
+         <Text style={styles.HeadApp}>Ecuación cuadrática</Text>
+         <Image style={styles.image} source={require('./src/imgs/ecuacion.jpg')} />
+         <Form setA={setA} setB={setB} setC={setC} />
+       </SafeAreaView>
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+        <Result
+          solution={solution}
+          errorMessage={errorMessage}
+        />
+        <Footer solve={solve} />
+     </>
+   );
+ };
+ 
+ export default App;

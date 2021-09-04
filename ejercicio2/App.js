@@ -6,107 +6,104 @@
  * @flow strict-local
  */
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {SafeAreaView, StyleSheet, Text, StatusBar} from 'react-native';
+import colors from './src/utils/colors';
+import Form from './src/components/Form';
+import Result from './src/components/Result';
+import Footer from './src/components/Footer';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const styles = StyleSheet.create({
+  Header: {
+    backgroundColor: colors.PRIMARY_COLOR,
+    height: 240,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    alignItems: 'center',
+  },
+  HeadApp: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginTop: 15,
+  },
+  safeArea: {
+    height: 290,
+    alignItems: 'center',
+  },
+  background: {
+    backgroundColor: colors.PRIMARY_COLOR,
+    height: 200,
+    width: '100%',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    position: 'absolute',
+    zIndex: -1,
+  },
+  titleApp: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 15,
+  },
+});
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+const App = () => {
+  const [name, setName] = useState(null);
+  const [salary, setSalary] = useState(null);
+  const [total, setTotal] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    if (!(name && salary)) {
+      reset();
+    }
+  }, [name, salary]);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const calculate = () => {
+    reset();
+    if (!name) {
+      setErrorMessage('Añade el nombre del empleado');
+    } else if (!salary) {
+      setErrorMessage('Añade el salario base');
+    } else {
+      let isssDiscount = salary * 0.03;
+      let afpDiscount = salary * 0.04;
+      let rentaDiscount = salary * 0.05;
+      let netSalary = salary - (isssDiscount + afpDiscount + rentaDiscount);
+
+      setTotal({
+        baseSalary: salary,
+        isssDiscount: isssDiscount,
+        afpDiscount: afpDiscount,
+        rentaDiscount: rentaDiscount,
+        netSalary: netSalary,
+      });
+    }
+  };
+
+  const reset = () => {
+    setErrorMessage('');
+    setTotal(null);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <>
+      <StatusBar barStyle="light-content" />
+      <SafeAreaView style={styles.Header}>
+        <Text style={styles.HeadApp}>Calcular descuentos de salario</Text>
+        <Form setName={setName} setSalary={setSalary} />
+      </SafeAreaView>
+      <Result
+        name={name}
+        salary={salary}
+        total={total}
+        errorMessage={errorMessage}
+      />
+
+      <Footer calculate={calculate} />
+    </>
   );
 };
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
