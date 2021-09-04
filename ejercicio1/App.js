@@ -74,12 +74,12 @@
        let x2 = ((-b) - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 
        if(isNaN(x1)){
-         x1 = 'No se encontro solución';
+          x1 = 'No se encontro solución';
        }
 
        if(isNaN(x2)){
-        x2 = 'No se encontro solución';
-      }
+          x2 = 'No se encontro solución';
+       }
 
        setSolution({
          x1: x1,
